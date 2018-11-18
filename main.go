@@ -88,12 +88,12 @@ func main() {
                             return
                     }
                     // echo
-                    uilog("#" + msg.Source + ":" + msg.Message, p, g)
+                    uilog("#" + strings.ToUpper(msg.Source) + ":" + msg.Message, p, g)
 
                     // command
                     output := doCommand(msg, devicename, c)
                     if (output != "") {
-                    	uilog("#" + msg.Source + ":" + output, p, g)
+                    	uilog("#" + strings.ToUpper(msg.Source) + ":" + output, p, g)
                     }
 
                     if output == "stop" {
@@ -202,7 +202,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
     	// for me
 		command := strings.Replace(msg.Message, whoami, "", -1)
 		sendMessage ("received command '" + command + "'", devicename, c)
-		if (command == "stop") {
+		if (command == "restart") {
 			sendMessage ("terminating console!", devicename, c)
 			return "stop"
 		}
@@ -211,7 +211,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
 		if strings.HasPrefix(msg.Message, "hi") {
 	    	answer := fmt.Sprintf("device #%s says hi\n", devicename)
 	    	sendMessage (answer, devicename, c)
-    	return ""
+    		return ""
     	}
 	}
 
