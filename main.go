@@ -13,7 +13,7 @@ import (
    "runtime"
    "os/exec"
    "strings"
-   "bytes"
+   // "bytes"
    d "./conf"
 )
 
@@ -184,14 +184,19 @@ func uilog (line string, log *ui.Par, command *ui.Par) {
 }
 
 func executeShell(cmd string) string {
-	out := exec.Command(cmd)
-	cmdOutput := &bytes.Buffer{}
-	out.Stdout = cmdOutput
-	err := out.Run()
-	if err != nil {
-	  return err.Error()
+
+	cmdline := strings.SplitAfter(cmd, " ")
+	mycmd := cmdline[0]
+	myargs := ""
+	if len(cmdline)>1 {
+		myargs = cmdline[1]
 	}
-	return fmt.Sprint(string(cmdOutput.Bytes()))
+	
+	if cmdout, err := exec.Command(mycmd,myargs).Output(); err != nil {
+		return err.Error()
+	} else {
+		return fmt.Sprint(string(cmdout))
+	}
 }
 
 func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
