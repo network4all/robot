@@ -186,7 +186,7 @@ func uilog (line string, log *ui.Par, command *ui.Par) {
 func executeShell(cmd string) string {
 
 	cmdline := strings.SplitAfter(cmd, " ")
-	mycmd := cmdline[0]
+	mycmd := strings.Replace(cmdline[0], " ", "", -1)
 	myargs := ""
 	if len(cmdline)>1 {
 		myargs = cmdline[1]
