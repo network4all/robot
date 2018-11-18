@@ -202,10 +202,22 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
     	// for me
 		command := strings.Replace(msg.Message, whoami, "", -1)
 		sendMessage ("received command '" + command + "'", devicename, c)
+		
+		// restart
 		if (command == "restart") {
 			sendMessage ("terminating console!", devicename, c)
 			return "stop"
 		}
+
+		// execute command
+		if (strings.HasPrefix(command, "shell")) {
+			shell := strings.Replace(command, "shell ", "", -1)
+			sendMessage ("execute command: " + shell + "!", devicename, c)
+			out := executeShell(shell)
+			sendMessage (out, devicename, c)
+			return ""
+		}
+
 	} else {
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
