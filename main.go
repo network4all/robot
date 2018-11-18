@@ -90,7 +90,7 @@ func main() {
                     // command
                     // uilog(msg.Message, p, g)
                     output := doCommand(msg, devicename, c)
-                    if (output != "") {}
+                    if (output != "") {
                     	uilog("#" + msg.Source + ":" + output, p, g)
                     }
             }
