@@ -95,6 +95,11 @@ func main() {
                     if (output != "") {
                     	uilog("#" + msg.Source + ":" + output, p, g)
                     }
+
+                    if output == "stop" {
+                    	ui.StopLoop()
+                    }
+
             }
     }()
 
@@ -189,7 +194,7 @@ func executeShell(cmd string) string {
 	return fmt.Sprint(string(cmdOutput.Bytes()))
 }
 
-func doCommand(msg Message, devicename string, c *websocket.Conn) string {
+func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
 
     whoami := "@" + devicename + " "
 
@@ -197,6 +202,10 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
     	// for me
 		command := strings.Replace(msg.Message, whoami, "", -1)
 		sendMessage ("received command '" + command + "'", devicename, c)
+		if (command == "stop") {
+			sendMessage ("terminating console!", devicename, c)
+			return "stop"
+		}
 	} else {
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
