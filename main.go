@@ -20,7 +20,7 @@ import (
 // Define our message object
 type Message struct {
         MessageId   string `json:"messageid"`   // timestamp+node
-        MessageType int `json:"messagetype"` // ping, sendobject, ...
+        MessageType int    `json:"messagetype"` // ping, sendobject, ...
         Source      string `json:"source"`      // node, serial mac
         Destination string `json:"destination"` // broadcast, serial mac
         Message     string `json:"message"`     // json object data
@@ -86,13 +86,10 @@ func main() {
                     		uilog(err.Error(), p, g)
                             return
                     }
+                    // command
                     uilog(msg.Message, p, g)
-                    // command?
-                    if strings.HasPrefix(msg.Message, "shell ") {
-                    	output := executeShell (strings.Replace(msg.Message, "shell ", "", -1))
-                    	uilog("out:\n" + output, p, g)
-                    }
-                   
+                    output := doCommand(msg, devicename)
+                    uilog("out:" + output, p, g)
             }
     }()
 
@@ -187,4 +184,15 @@ func executeShell(cmd string) string {
 	  return err.Error()
 	}
 	return fmt.Sprint(string(cmdOutput.Bytes()))
+}
+
+func doCommand(msg Message, devicename string) string {
+
+	if strings.HasPrefix(msg.Message, "shell ") {
+        return executeShell (strings.Replace(msg.Message, "shell ", "", -1))
+    }
+    if strings.HasPrefix(msg.Message, "hi") {
+    	return fmt.Sprintf("device #%s says hi\n", devicename)
+	}
+	return ""
 }
