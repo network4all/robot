@@ -207,7 +207,6 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
     if strings.HasPrefix(msg.Message, whoami) {
     	// for me
 		command := strings.Replace(msg.Message, whoami, "", -1)
-		sendMessage ("received command '" + command + "'", devicename, c)
 		
 		// restart
 		if (command == "restart") {
@@ -223,6 +222,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
 			sendMessage (out, devicename, c)
 			return ""
 		}
+		sendMessage ("received command '" + command + "'", devicename, c)
 
 	} else {
 		// for all
