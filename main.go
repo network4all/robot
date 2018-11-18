@@ -74,6 +74,7 @@ func main() {
     go func() {
             defer close(done)
             for {
+            		// read
                     _, messagejson, err := c.ReadMessage()
                     if err != nil {
                     		uilog(err.Error(), p, g)
@@ -87,7 +88,7 @@ func main() {
                             return
                     }
                     // command
-                    uilog(msg.Message, p, g)
+                    // uilog(msg.Message, p, g)
                     output := doCommand(msg, devicename, c)
                     if (output != "") {}
                     	uilog("#" + msg.Source + ":" + output, p, g)
