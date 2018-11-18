@@ -185,14 +185,15 @@ func uilog (line string, log *ui.Par, command *ui.Par) {
 
 func executeShell(cmd string) string {
 
-	cmdline := strings.SplitAfter(cmd, " ")
-	mycmd := strings.Replace(cmdline[0], " ", "", -1)
-	myargs := ""
-	if len(cmdline)>1 {
-		myargs = cmdline[1]
-	}
+	//cmdline := strings.SplitAfter(cmd, " ")
+	//mycmd := strings.Replace(cmdline[0], " ", "", -1)
+	//myargs := ""
+
+	//if len(cmdline)>1 {
+	//	myargs = cmdline[1]
+	//}
 	
-	if cmdout, err := exec.Command(mycmd,myargs).Output(); err != nil {
+	if cmdout, err := exec.Command("sh","-c", cmd).Output(); err != nil {
 		return err.Error()
 	} else {
 		return fmt.Sprint(string(cmdout))
