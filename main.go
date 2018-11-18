@@ -88,7 +88,6 @@ func main() {
                             return
                     }
                     // command
-                    // uilog(msg.Message, p, g)
                     output := doCommand(msg, devicename, c)
                     if (output != "") {
                     	uilog("#" + msg.Source + ":" + output, p, g)
@@ -193,17 +192,19 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 
     whoami := "@" + devicename + " "
 
-	if strings.HasPrefix(msg.Message, "shell ") {
-        return executeShell (strings.Replace(msg.Message, "shell ", "", -1))
-    }
-    if strings.HasPrefix(msg.Message, "hi") {
+    if strings.HasPrefix(msg.Message, whoami) {
+    	// for me
+		command := strings.Replace(msg.Message, whoami, "", -1)
+		sendMessage ("received command '" + command + "'", devicename, c)
+	} else {
+		// for all
+		if strings.HasPrefix(msg.Message, "hi") {
     	answer := fmt.Sprintf("device #%s says hi\n", devicename)
     	sendMessage (answer, devicename, c)
     	return ""
-	}
-	if strings.HasPrefix(msg.Message, whoami) {
-		sendMessage ("At your service", devicename, c)
+    	}
 	}
 
+    // nothing to do
 	return ""
 }
