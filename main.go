@@ -88,7 +88,7 @@ func main() {
                     }
                     // command
                     uilog(msg.Message, p, g)
-                    output := doCommand(msg, devicename)
+                    output := doCommand(msg, devicename, c)
                     uilog("out:" + output, p, g)
             }
     }()
@@ -186,13 +186,15 @@ func executeShell(cmd string) string {
 	return fmt.Sprint(string(cmdOutput.Bytes()))
 }
 
-func doCommand(msg Message, devicename string) string {
+func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 
 	if strings.HasPrefix(msg.Message, "shell ") {
         return executeShell (strings.Replace(msg.Message, "shell ", "", -1))
     }
     if strings.HasPrefix(msg.Message, "hi") {
-    	return fmt.Sprintf("device #%s says hi\n", devicename)
+    	answer := fmt.Sprintf("device #%s says hi\n", devicename)
+    	sendMessage (answer, devicename, c)
+    	return ""
 	}
 	return ""
 }
