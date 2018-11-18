@@ -153,7 +153,6 @@ func mykeyboard (commandline string, device string, keypressed string, log *ui.P
 }
 
 func sendMessage (message string, device string, c *websocket.Conn) {
-
 	t := time.Now()
 	
     var msg Message
@@ -169,7 +168,6 @@ func sendMessage (message string, device string, c *websocket.Conn) {
             log.Println("write:", err)
             return
     }
-
 }
 
 func uilog (line string, log *ui.Par, command *ui.Par) {
@@ -199,8 +197,8 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 	} else {
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
-    	answer := fmt.Sprintf("device #%s says hi\n", devicename)
-    	sendMessage (answer, devicename, c)
+	    	answer := fmt.Sprintf("device #%s says hi\n", devicename)
+	    	sendMessage (answer, devicename, c)
     	return ""
     	}
 	}
