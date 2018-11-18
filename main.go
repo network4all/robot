@@ -188,6 +188,8 @@ func executeShell(cmd string) string {
 
 func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 
+    whoami := "@" + devicename + " "
+
 	if strings.HasPrefix(msg.Message, "shell ") {
         return executeShell (strings.Replace(msg.Message, "shell ", "", -1))
     }
@@ -196,5 +198,9 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
     	sendMessage (answer, devicename, c)
     	return ""
 	}
+	if strings.HasPrefix(msg.Message, whoami) {
+		sendMessage ("At your service", devicename, c)
+	}
+
 	return ""
 }
