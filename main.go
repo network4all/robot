@@ -87,6 +87,9 @@ func main() {
                     		uilog(err.Error(), p, g)
                             return
                     }
+                    // echo
+                    uilog("#" + msg.Source + ":" + msg.Message, p, g)
+
                     // command
                     output := doCommand(msg, devicename, c)
                     if (output != "") {
