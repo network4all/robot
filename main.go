@@ -56,21 +56,18 @@ func main() {
 
 	// websocket
     log.SetFlags(0)
-
     interrupt := make(chan os.Signal, 1)
     signal.Notify(interrupt, os.Interrupt)
-
     u := url.URL{Scheme: "wss", Host: d.Url(), Path: d.Path()}
-
     c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
     if err != nil {
             log.Fatal("dial:", err)
     }
     defer c.Close()
-    ui.Render(p,g)
+
+    //ui.Render(p,g)
 
     done := make(chan struct{})
-
     go func() {
             defer close(done)
             for {
@@ -112,6 +109,10 @@ func main() {
 		g.Text = fmt.Sprintf("> %s", cmd)
 		ui.Render(p,g)
 	})
+
+
+    // keepalive
+    //keepaliveTicker := time.NewTicker(time.Second*15)
 
     // update loop
     drawTicker := time.NewTicker(time.Second)
@@ -173,6 +174,7 @@ func sendMessage (message string, device string, c *websocket.Conn) {
 
     err := c.WriteJSON(msg)
     if err != nil {
+            // todo: reconnect!
             log.Println("write:", err)
             return
     }
@@ -226,4 +228,19 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
 
     // nothing to do
 	return ""
+}
+
+func ping(ws *websocket.Conn, done chan struct{}) {
+    ticker := time.NewTicker(time.Second * 15)
+    defer ticker.Stop()
+    for {
+        select {
+        case <-ticker.C:
+            if err := ws.WriteControl(websocket.PingMessage, []byte{}, time.Now().Add(writeWait)); err != nil {
+                log.Println("ping:", err)
+            }
+        case <-done:
+            return
+        }
+    }
 }
