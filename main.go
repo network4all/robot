@@ -100,15 +100,15 @@ func main() {
                     if (msg.MessageType == 2) {
                         // photo/file
                         uilog("#" + strings.ToUpper(msg.Source) + " receiver photo!", p, g)
-                        decode ("c:\\temp\\testdecode.jpg", msg.Message)
+                        photo := "c:\\temp\\testdecode.jpg"
+                        decode (photo, msg.Message)
 
                         if (runtime.GOOS == "windows") {
-                            photo := "c:\temp\testdecode.jpg"
                             exec.Command("mspaint", photo).Output()
                         }
                     }
 
-                    if (msg.MessageType == 1 ) {
+                    if (msg.MessageType == 1) {
 
                         // echo
                         uilog("#" + strings.ToUpper(msg.Source) + ":" + msg.Message, p, g)
@@ -213,7 +213,7 @@ func sendMessageTo (destination string, message string, msgtype int, device stri
 
 func sendPhoto (destination string, device string, c *websocket.Conn) int {
 
-   photo := "/root/scripts/photo/201811221406.jpeg"
+   photo := "/root/scripts/photo/201811221424.jpeg"
    encoded := encode(photo)
    sendMessageTo(destination, encoded, 2, device, c)
    return len(encoded)
