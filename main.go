@@ -95,6 +95,11 @@ func main() {
                     		uilog(err.Error(), p, g)
                             return
                     }
+
+                    if (msg.MessageType == 2) {
+                        uilog("#" + strings.ToUpper(msg.Source) + " send photo.", p, g)
+                    }
+
                     // echo
                     uilog("#" + strings.ToUpper(msg.Source) + ":" + msg.Message, p, g)
 
@@ -171,14 +176,19 @@ func mykeyboard (commandline string, device string, keypressed string, log *ui.P
 	return commandline
 }
 
+
 func sendMessage (message string, msgtype int, device string, c *websocket.Conn) {
+   sendMessageTo("", message, msgtype, device, c )
+}
+
+func sendMessageTo (destination string, message string, msgtype int, device string, c *websocket.Conn) {
 	t := time.Now()
 	
     var msg Message
     msg.MessageId   = fmt.Sprintf("%s %s", device, t.Format(time.StampMilli))
     msg.MessageType = msgtype
     msg.Source      = device
-    msg.Destination = ""
+    msg.Destination = destination
     msg.Message     = message
     msg.Ack         = false
 
@@ -188,6 +198,14 @@ func sendMessage (message string, msgtype int, device string, c *websocket.Conn)
             log.Println("write:", err)
             return
     }
+}
+
+func sendPhoto (destination string, device string, c *websocket.Conn) int {
+
+   photo := "/root/scripts/photo/201811221130.jpeg"
+   encoded := encode(photo)
+   sendMessageTo(destination, encoded, 2, device, c)
+   return len(encoded)
 }
 
 func uilog (line string, log *ui.Par, command *ui.Par) {
@@ -229,7 +247,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
         // file
         if (strings.HasPrefix(command, "photo")) {
             sendMessage ("Will send a photo", 1, devicename, c)
-            size := sendPhoto(devicename, c)
+            size := sendPhoto(msg.Source, devicename, c)
             sendMessage (fmt.Sprintf("Photo send with %d size!", size), 1, devicename, c)
             return ""
         }
@@ -261,15 +279,6 @@ func ping(ws *websocket.Conn) {
     }
 }
 
-func sendPhoto (device string, c *websocket.Conn) int {
-
-   photo := "/root/scripts/photo/201811221130.jpeg"
-
-   encoded := encode(photo)
-   sendMessage(encoded, 2, device, c)
-
-   return len(encoded)
-}
 
 func encode(filename string) string {
 
