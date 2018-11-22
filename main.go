@@ -230,7 +230,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
         if (strings.HasPrefix(command, "photo")) {
             sendMessage ("Will send a photo", 1, devicename, c)
             size := sendPhoto(devicename, c)
-            sendMessage (fmt.Sprintf("Photo send with %d size Will send a photo", size), 1, devicename, c)
+            sendMessage (fmt.Sprintf("Photo send with %d size!", size), 1, devicename, c)
             return ""
         }
 		sendMessage ("received command '" + command + "'", 1, devicename, c)
