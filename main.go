@@ -8,6 +8,8 @@ import (
    "log"
    "os" 
    "os/signal"
+   "encoding/base64"
+   "io/ioutil"
    "net/url"
    "encoding/json"
    "runtime"
@@ -15,6 +17,7 @@ import (
    "strings"
    // "bytes"
    d "./conf"
+   "bufio"
 )
 
 // Define our message object
@@ -109,7 +112,7 @@ func main() {
     }()
 
     // welcome
-    sendMessage(fmt.Sprintf("client %s (%s) is connected to %s", devicename, runtime.GOOS, u.String()), devicename, c)
+    sendMessage(fmt.Sprintf("client %s (%s) is connected to %s", devicename, runtime.GOOS, u.String()), 1, devicename, c)
 
     // key   
 	ui.Handle("<Keyboard>" , func(e ui.Event) {
@@ -155,7 +158,7 @@ func mykeyboard (commandline string, device string, keypressed string, log *ui.P
     	case "<Space>":
     		commandline = commandline + " "
     	case "<Enter>":
-    		sendMessage(commandline, device, c)
+    		sendMessage(commandline, 1, device, c)
     		//log.Text = fmt.Sprintf("%s\n%s", commandline, log.Text)
     		commandline = ""
     	case "<Backspace>":
@@ -168,12 +171,12 @@ func mykeyboard (commandline string, device string, keypressed string, log *ui.P
 	return commandline
 }
 
-func sendMessage (message string, device string, c *websocket.Conn) {
+func sendMessage (message string, msgtype int, device string, c *websocket.Conn) {
 	t := time.Now()
 	
     var msg Message
     msg.MessageId   = fmt.Sprintf("%s %s", device, t.Format(time.StampMilli))
-    msg.MessageType = 1
+    msg.MessageType = msgtype
     msg.Source      = device
     msg.Destination = ""
     msg.Message     = message
@@ -210,25 +213,31 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
 		
 		// restart
 		if (command == "restart") {
-			sendMessage ("terminating console!", devicename, c)
+			sendMessage ("terminating console!", 1,  devicename, c)
 			return "stop"
 		}
 
 		// execute command
 		if (strings.HasPrefix(command, "shell")) {
 			shell := strings.Replace(command, "shell ", "", -1)
-			sendMessage ("execute command: '" + shell + "'.", devicename, c)
+			sendMessage ("execute command: '" + shell + "'.", 1, devicename, c)
 			out := executeShell(shell)
-			sendMessage (out, devicename, c)
-			return ""
+			sendMessage (out, 1, devicename, c)
+		
+        	return ""
 		}
-		sendMessage ("received command '" + command + "'", devicename, c)
+        // file
+        if (strings.HasPrefix(command, "photo")) {
+            sendPhoto(devicename, c)
+            return ""
+        }
+		sendMessage ("received command '" + command + "'", 1, devicename, c)
 
 	} else {
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
 	    	answer := fmt.Sprintf("device #%s says hi\n", devicename)
-	    	sendMessage (answer, devicename, c)
+	    	sendMessage (answer, 1, devicename, c)
     		return ""
     	}
 	}
@@ -248,4 +257,26 @@ func ping(ws *websocket.Conn) {
             }
         }
     }
+}
+
+func sendPhoto (device string, c *websocket.Conn) {
+
+   photo := "/root/scripts/photo/201811221130.jpeg"
+   encoded := encode(photo)
+
+   sendMessage(encoded, 2, device, c)
+}
+
+func encode(filename string) string {
+
+    f, _ := os.Open(filename)
+
+    // Read entire JPG into byte slice.
+    reader := bufio.NewReader(f)
+    content, _ := ioutil.ReadAll(reader)
+
+    // Encode as base64.
+    encoded := base64.StdEncoding.EncodeToString(content)
+
+    return encoded
 }
