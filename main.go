@@ -206,7 +206,7 @@ func sendMessageTo (destination string, message string, msgtype int, device stri
 
 func sendPhoto (destination string, device string, c *websocket.Conn) int {
 
-   photo := "/root/scripts/photo/201811221130.jpeg"
+   photo := "/root/scripts/photo/201811221406.jpeg"
 
    // photo := "c:\\temp\\test.jpg"
    encoded := encode(photo)
