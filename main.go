@@ -27,6 +27,7 @@ type Message struct {
         Source      string `json:"source"`      // node, serial mac
         Destination string `json:"destination"` // broadcast, serial mac
         Message     string `json:"message"`     // json object data
+        Data        string `json:"data"`        // json object data
         Ack         bool   `json:"ack"`         // read ack (tcp/udp) (true/false)
 }
 
@@ -100,6 +101,11 @@ func main() {
                         // photo/file
                         uilog("#" + strings.ToUpper(msg.Source) + " receiver photo!", p, g)
                         decode ("c:\\temp\\testdecode.jpg", msg.Message)
+
+                        if (runtime.GOOS == "windows") {
+                            photo := "c:\temp\testdecode.jpg"
+                            exec.Command("mspaint", photo).Output()
+                        }
                     }
 
                     if (msg.MessageType == 1 ) {
@@ -194,6 +200,7 @@ func sendMessageTo (destination string, message string, msgtype int, device stri
     msg.Source      = device
     msg.Destination = destination
     msg.Message     = message
+    msg.Data        = ""
     msg.Ack         = false
 
     err := c.WriteJSON(msg)
@@ -207,8 +214,6 @@ func sendMessageTo (destination string, message string, msgtype int, device stri
 func sendPhoto (destination string, device string, c *websocket.Conn) int {
 
    photo := "/root/scripts/photo/201811221406.jpeg"
-
-   // photo := "c:\\temp\\test.jpg"
    encoded := encode(photo)
    sendMessageTo(destination, encoded, 2, device, c)
    return len(encoded)
