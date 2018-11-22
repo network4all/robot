@@ -97,22 +97,26 @@ func main() {
                     }
 
                     if (msg.MessageType == 2) {
-                        uilog("#" + strings.ToUpper(msg.Source) + " send photo.", p, g)
+                        // photo/file
+                        uilog("#" + strings.ToUpper(msg.Source) + " receiver photo!", p, g)
+
                     }
 
-                    // echo
-                    uilog("#" + strings.ToUpper(msg.Source) + ":" + msg.Message, p, g)
+                    if (msg.MessageType == 1 ) {
 
-                    // command
-                    output := doCommand(msg, devicename, c)
-                    if (output != "") {
-                    	uilog("#" + strings.ToUpper(msg.Source) + ":" + output, p, g)
+                        // echo
+                        uilog("#" + strings.ToUpper(msg.Source) + ":" + msg.Message, p, g)
+
+                        // command
+                        output := doCommand(msg, devicename, c)
+                        if (output != "") {
+                        	uilog("#" + strings.ToUpper(msg.Source) + ":" + output, p, g)
+                        }
+                        // stop
+                        if output == "stop" {
+                        	ui.StopLoop()
+                        }
                     }
-
-                    if output == "stop" {
-                    	ui.StopLoop()
-                    }
-
             }
     }()
 
@@ -202,7 +206,9 @@ func sendMessageTo (destination string, message string, msgtype int, device stri
 
 func sendPhoto (destination string, device string, c *websocket.Conn) int {
 
-   photo := "/root/scripts/photo/201811221130.jpeg"
+   //photo := "/root/scripts/photo/201811221130.jpeg"
+
+   photo := "c:\\temp\\test.jpg"
    encoded := encode(photo)
    sendMessageTo(destination, encoded, 2, device, c)
    return len(encoded)
@@ -288,4 +294,24 @@ func encode(filename string) string {
     encoded := base64.StdEncoding.EncodeToString(content)
 
     return encoded
+}
+
+func decode(filename string, data string) {
+    dec, err := base64.StdEncoding.DecodeString(data)
+    if err != nil {
+        panic(err)
+    }
+
+    f, err := os.Create(filename)
+    if err != nil {
+        panic(err)
+    }
+    defer f.Close()
+
+    if _, err := f.Write(dec); err != nil {
+        panic(err)
+    }
+    if err := f.Sync(); err != nil {
+        panic(err)
+    }
 }
