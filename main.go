@@ -229,7 +229,8 @@ func doCommand(msg Message, devicename string, c *websocket.Conn, ) string {
         // file
         if (strings.HasPrefix(command, "photo")) {
             sendMessage ("Will send a photo", 1, devicename, c)
-            sendPhoto(devicename, c)
+            size := sendPhoto(devicename, c)
+            sendMessage (fmt.Sprintf("Photo send with %d size Will send a photo", size), 1, devicename, c)
             return ""
         }
 		sendMessage ("received command '" + command + "'", 1, devicename, c)
@@ -260,23 +261,21 @@ func ping(ws *websocket.Conn) {
     }
 }
 
-func sendPhoto (device string, c *websocket.Conn) {
+func sendPhoto (device string, c *websocket.Conn) int {
 
    photo := "/root/scripts/photo/201811221130.jpeg"
-   encoded := encode(photo)
 
+   encoded := encode(photo)
    sendMessage(encoded, 2, device, c)
+
+   return len(encoded)
 }
 
 func encode(filename string) string {
 
     f, _ := os.Open(filename)
-
-    // Read entire JPG into byte slice.
     reader := bufio.NewReader(f)
     content, _ := ioutil.ReadAll(reader)
-
-    // Encode as base64.
     encoded := base64.StdEncoding.EncodeToString(content)
 
     return encoded
