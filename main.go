@@ -99,7 +99,7 @@ func main() {
                     if (msg.MessageType == 2) {
                         // photo/file
                         uilog("#" + strings.ToUpper(msg.Source) + " receiver photo!", p, g)
-
+                        decode ("c:\\temp\\testdecode.jpg", msg.Message)
                     }
 
                     if (msg.MessageType == 1 ) {
