@@ -6,9 +6,9 @@ import (
 )
 
 func executeShell(cmd string) string {
-	if cmdout, err := exec.Command("sh", "-c", cmd).Output(); err != nil {
+	cmdout, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
 		return err.Error()
-	} else {
-		return fmt.Sprint("\n" + string(cmdout))
 	}
+	return fmt.Sprint("\n" + string(cmdout))
 }
