@@ -32,6 +32,22 @@ func sendMessage(message string, msgtype int, device string, c *websocket.Conn) 
 	sendMessageTo("", message, msgtype, device, c)
 }
 
+func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, error) {
+	photopath := "/root/scripts/photo/"
+	fis, err := ioutil.ReadDir(photopath)
+	if err != nil {
+		// return nil, 
+	}
+
+	for_, fi := range (fis) {
+   		if fi.IsDir || filepath.Ext(name) := ".jpeg" {
+   			continue
+   		}
+        sendMessage("sending: "+ fi.Name, 1, destination, c)
+   	}
+}
+
+
 func sendPhoto(destination string, device string, c *websocket.Conn) int {
 
 	photo := "/root/scripts/photo/201811230854.jpeg"
