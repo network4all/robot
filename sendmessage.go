@@ -48,7 +48,9 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
    		}
         sendMessage("sending: "+ name, 1, destination, c)
         encoded := encode(photopath + name)
-        sendMessageTo(destination, fmt.Sprintf("%s", fi), 2, encoded, device, c)
+        if len (encoded) >0 {
+           sendMessageTo(destination, fmt.Sprintf("%s", fi.Name()), 2, encoded, device, c)
+        }
    	}
    	return 1, nil
 }

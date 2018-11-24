@@ -14,9 +14,7 @@ import (
 
 	ui "github.com/gizak/termui"
 	"github.com/gorilla/websocket"
-
 	// "bytes"
-
 	d "./conf"
 )
 
@@ -80,10 +78,11 @@ func main() {
 
 			if msg.MessageType == 2 {
 				// photo/file
-				uilog("#"+strings.ToUpper(msg.Source)+" receiver photo!", p, g)
 				photo := "c:\\temp\\" + msg.Message
-				decode(photo, msg.Data)
+				uilog("#"+strings.ToUpper(msg.Source)+" Copy " + photo +" to c:\temp!", p, g)
+				
 
+				//decode(photo, msg.Data)
 				if runtime.GOOS == "windows" {
 					//exec.Command("mspaint", photo).Output()
 				}
