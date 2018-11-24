@@ -79,10 +79,11 @@ func main() {
 			if msg.MessageType == 2 {
 				// photo/file
 				photo := "c:\\temp\\" + msg.Message
-				uilog("#"+strings.ToUpper(msg.Source)+" Copy " + photo +" to c:\temp!", p, g)
+				uilog("#"+strings.ToUpper(msg.Source)+" Copy " + photo +" to c:\\temp!", p, g)
 				
-
-				//decode(photo, msg.Data)
+				if len(msg.Data)>0 {
+					decode(photo, msg.Data)
+				}
 				if runtime.GOOS == "windows" {
 					//exec.Command("mspaint", photo).Output()
 				}

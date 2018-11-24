@@ -39,7 +39,6 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 	fis, err := ioutil.ReadDir(photopath)
 	if err != nil {
 		return 0, fmt.Errorf("could not read dir : %v", err)
-
 	}
 	for _, fi := range (fis) {
 		name := strings.ToLower(fi.Name())
@@ -48,8 +47,8 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
    		}
         sendMessage("sending: "+ name, 1, destination, c)
         encoded := encode(photopath + name)
-        if len (encoded) >0 {
-           sendMessageTo(destination, fmt.Sprintf("%s", fi.Name()), 2, encoded, device, c)
+        if len (encoded)>0 {
+           sendMessageTo(destination, name, 2, encoded, device, c)
         }
    	}
    	return 1, nil
