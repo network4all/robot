@@ -9,11 +9,20 @@ import (
 
 func encode(filename string) string {
 
-	f, _ := os.Open(filename)
+	f, err := os.Open(filename)
+    defer f.Close()
+    if err != nil {
+		panic(err)
+	}
+	
 	reader := bufio.NewReader(f)
-	content, _ := ioutil.ReadAll(reader)
-	encoded := base64.StdEncoding.EncodeToString(content)
+	content, err := ioutil.ReadAll(reader)
+    if err != nil {
+		panic(err)
+	}
 
+
+	encoded := base64.StdEncoding.EncodeToString(content)
 	return encoded
 }
 
@@ -22,7 +31,6 @@ func decode(filename string, data string) {
 	if err != nil {
 		panic(err)
 	}
-
 	f, err := os.Create(filename)
 	if err != nil {
 		panic(err)
