@@ -81,11 +81,11 @@ func main() {
 			if msg.MessageType == 2 {
 				// photo/file
 				uilog("#"+strings.ToUpper(msg.Source)+" receiver photo!", p, g)
-				photo := "c:\\temp\\testdecode.jpg"
-				decode(photo, msg.Message)
+				photo := "c:\\temp\\" + msg.Message
+				decode(photo, msg.Data)
 
 				if runtime.GOOS == "windows" {
-					exec.Command("mspaint", photo).Output()
+					//exec.Command("mspaint", photo).Output()
 				}
 			}
 

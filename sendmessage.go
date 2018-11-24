@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func sendMessageTo(destination string, message string, msgtype int, device string, c *websocket.Conn) {
+func sendMessageTo(destination string, message string, msgtype int, data string, device string, c *websocket.Conn) {
 	t := time.Now()
 
 	var msg Message
@@ -19,7 +19,7 @@ func sendMessageTo(destination string, message string, msgtype int, device strin
 	msg.Source = device
 	msg.Destination = destination
 	msg.Message = message
-	msg.Data = ""
+	msg.Data = data
 	msg.Ack = false
 
 	err := c.WriteJSON(msg)
@@ -31,7 +31,7 @@ func sendMessageTo(destination string, message string, msgtype int, device strin
 }
 
 func sendMessage(message string, msgtype int, device string, c *websocket.Conn) {
-	sendMessageTo("", message, msgtype, device, c)
+	sendMessageTo("", message, msgtype, "", device, c)
 }
 
 func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, error) {
@@ -41,22 +41,22 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 		return 0, fmt.Errorf("could not read dir : %v", err)
 
 	}
-
 	for _, fi := range (fis) {
 		name := strings.ToLower(fi.Name())
    		if fi.IsDir() || filepath.Ext(name) != ".jpeg" {
    			continue
    		}
         sendMessage("sending: "+ name, 1, destination, c)
+        encoded := encode(photopath + name)
+        sendMessageTo(destination, fmt.Sprintf("%s", fi), 2, encoded, device, c)
    	}
    	return 1, nil
 }
 
 
 func sendPhoto(destination string, device string, c *websocket.Conn) int {
-
 	photo := "/root/scripts/photo/201811230854.jpeg"
 	encoded := encode(photo)
-	sendMessageTo(destination, encoded, 2, device, c)
+	sendMessageTo(destination, "201811230854.jpeg", 2, encoded, device, c)
 	return len(encoded)
 }
