@@ -6,7 +6,7 @@ import (
 	"log"
 	"net/url"
 	"os"
-	"os/exec"
+	//"os/exec"
 	"os/signal"
 	"runtime"
 	"strings"
