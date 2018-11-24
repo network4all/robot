@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"log"
 	"time"
-
+	"io/ioutil"
+	"path/filepath"
 	"github.com/gorilla/websocket"
+	"strings"
 )
 
 func sendMessageTo(destination string, message string, msgtype int, device string, c *websocket.Conn) {
@@ -36,15 +38,18 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 	photopath := "/root/scripts/photo/"
 	fis, err := ioutil.ReadDir(photopath)
 	if err != nil {
-		// return nil, 
+		return 0, fmt.Errorf("could not read dir : %v", err)
+
 	}
 
-	for_, fi := range (fis) {
-   		if fi.IsDir || filepath.Ext(name) := ".jpeg" {
+	for _, fi := range (fis) {
+		name := strings.ToLower(fi.Name())
+   		if fi.IsDir() || filepath.Ext(name) != ".jpeg" {
    			continue
    		}
-        sendMessage("sending: "+ fi.Name, 1, destination, c)
+        sendMessage("sending: "+ name, 1, destination, c)
    	}
+   	return 1, nil
 }
 
 
