@@ -10,7 +10,6 @@ import (
 func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 
 	whoami := "@" + devicename + " "
-
 	if strings.HasPrefix(msg.Message, whoami) {
 		// for me
 		command := strings.Replace(msg.Message, whoami, "", -1)
@@ -45,10 +44,6 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 			sendMessage(fmt.Sprintf("Photo send with %d size!", size), 1, devicename, c)
 			return ""
 		}
-
-
-
-
 	} else {
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
