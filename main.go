@@ -6,14 +6,15 @@ import (
 	"log"
 	"net/url"
 	"os"
+
 	//"os/exec"
 	"os/signal"
 	"runtime"
-	"strings"
 	"time"
 
 	ui "github.com/gizak/termui"
 	"github.com/gorilla/websocket"
+
 	// "bytes"
 	d "./conf"
 )
@@ -27,21 +28,11 @@ func main() {
 	}
 	defer ui.Close()
 
+	// build screen
 	p := ui.NewPar("")
-	p.Height = 25
-	p.Width = 120
-	p.TextFgColor = ui.ColorWhite
-	p.BorderLabel = fmt.Sprintf("Websocket console of %s", devicename)
-	p.BorderFg = ui.ColorCyan
-
-	g := ui.NewPar("> ")
-	g.Height = 5
-	g.Width = 120
-	g.Y = 25
-	g.TextFgColor = ui.ColorWhite
-	g.BorderLabel = "Commands"
-	g.BorderFg = ui.ColorGreen
-
+	g := ui.NewPar(">")
+	initscreen(p, "Websocket console of "+devicename)
+	initconsole(g)
 	ui.Render(p, g)
 	cmd := ""
 
@@ -56,8 +47,7 @@ func main() {
 	}
 	defer c.Close()
 
-	//ui.Render(p,g)
-
+	// message reader
 	done := make(chan struct{})
 	go func() {
 		defer close(done)
@@ -75,35 +65,8 @@ func main() {
 				uilog(err.Error(), p, g)
 				return
 			}
-
-			if msg.MessageType == 2 {
-				// photo/file
-				photo := "c:\\temp\\" + msg.Message
-				uilog("#"+strings.ToUpper(msg.Source)+" Copy " + photo +" to c:\\temp!", p, g)
-				
-				if len(msg.Data)>0 {
-					decode(photo, msg.Data)
-				}
-				if runtime.GOOS == "windows" {
-					//exec.Command("mspaint", photo).Output()
-				}
-			}
-
-			if msg.MessageType == 1 {
-
-				// echo
-				uilog("#"+strings.ToUpper(msg.Source)+":"+msg.Message, p, g)
-
-				// command
-				output := doCommand(msg, devicename, c)
-				if output != "" {
-					uilog("#"+strings.ToUpper(msg.Source)+":"+output, p, g)
-				}
-				// stop
-				if output == "stop" {
-					ui.StopLoop()
-				}
-			}
+			// handle
+			handleMessage(msg, devicename, p, g, c)
 		}
 	}()
 
@@ -124,7 +87,6 @@ func main() {
 	drawTicker := time.NewTicker(time.Second)
 	go func() {
 		for {
-			//p.Text = fmt.Sprintf("%d\n%s", timer, p.Text)
 			ui.Render(p, g)
 			<-drawTicker.C
 		}

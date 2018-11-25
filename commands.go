@@ -31,6 +31,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 			sendMessage(out, 1, devicename, c)
 			return ""
 		}
+
 		// file
 		if strings.HasPrefix(command, "photo") {
 			sendMessage("Will send a photo", 1, devicename, c)
@@ -42,6 +43,7 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 			sendMessage(fmt.Sprintf("photo send with %d size!", size), 1, devicename, c)
 			return ""
 		}
+
 		// allphoto
 		if strings.HasPrefix(command, "all") {
 			sendMessage("Will send all photos", 1, devicename, c)
@@ -49,8 +51,10 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 			sendMessage(fmt.Sprintf("Photo send with %d size!", size), 1, devicename, c)
 			return ""
 		}
+
 		sendMessage("received command '"+command+"'", 1, devicename, c)
 	} else {
+
 		// for all
 		if strings.HasPrefix(msg.Message, "hi") {
 			answer := fmt.Sprintf("device #%s says hi\n", devicename)
