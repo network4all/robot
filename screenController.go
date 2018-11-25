@@ -18,3 +18,8 @@ func initconsole(g *ui.Par) {
 	g.BorderLabel = "Commands"
 	g.BorderFg = ui.ColorGreen
 }
+
+func uilog(line string, log *ui.Par, command *ui.Par) {
+	log.Text = fmt.Sprintf("%s\n%s", line, log.Text)
+	ui.Render(log, command)
+}
