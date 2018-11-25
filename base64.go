@@ -21,7 +21,6 @@ func encode(filename string) string {
 		panic(err)
 	}
 
-
 	encoded := base64.StdEncoding.EncodeToString(content)
 	return encoded
 }
