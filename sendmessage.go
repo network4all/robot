@@ -2,15 +2,17 @@ package main
 
 import (
 	"fmt"
-	"log"
-	"time"
 	"io/ioutil"
 	"path/filepath"
-	"github.com/gorilla/websocket"
+	"sort"
 	"strings"
+	"time"
+
+	"github.com/gorilla/websocket"
 )
 
-func sendMessageTo(destination string, message string, msgtype int, data string, device string, c *websocket.Conn) {
+// send message to destination
+func sendMessageTo(destination string, message string, msgtype int, data string, device string, c *websocket.Conn) error {
 	t := time.Now()
 
 	var msg Message
@@ -24,40 +26,60 @@ func sendMessageTo(destination string, message string, msgtype int, data string,
 
 	err := c.WriteJSON(msg)
 	if err != nil {
-		// todo: reconnect!
-		log.Println("write:", err)
-		return
+		//Todo: reconnect
+		return fmt.Errorf("could not decode string :%v", err)
 	}
+	return nil
 }
 
+// send message to all
 func sendMessage(message string, msgtype int, device string, c *websocket.Conn) {
 	sendMessageTo("", message, msgtype, "", device, c)
 }
 
+// send last 4 photo's
 func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, error) {
 	photopath := "/root/scripts/photo/"
 	fis, err := ioutil.ReadDir(photopath)
 	if err != nil {
 		return 0, fmt.Errorf("could not read dir : %v", err)
 	}
-	for _, fi := range (fis) {
+
+	// sort date
+	sort.Slice(fis, func(i, j int) bool {
+		return fis[i].ModTime().Unix() < fis[j].ModTime().Unix()
+	})
+
+	// send photo's
+	cnt := 1
+	for _, fi := range fis {
+		cnt++
+		if cnt > 4 {
+			break
+		}
+
 		name := strings.ToLower(fi.Name())
-   		if fi.IsDir() || filepath.Ext(name) != ".jpeg" {
-   			continue
-   		}
-        sendMessage("sending: "+ name, 1, destination, c)
-        encoded := encode(photopath + name)
-        if len (encoded)>0 {
-           sendMessageTo(destination, name, 2, encoded, device, c)
-        }
-   	}
-   	return 1, nil
+		if fi.IsDir() || filepath.Ext(name) != ".jpeg" {
+			continue
+		}
+
+		sendMessage("sending: "+name, 1, destination, c)
+		encoded, err := encode(photopath + name)
+		if err != nil {
+			sendMessageTo(destination, name, 2, encoded, device, c)
+		}
+
+	}
+	return 1, nil
 }
 
-
-func sendPhoto(destination string, device string, c *websocket.Conn) int {
+// send 1 photo
+func sendPhoto(destination string, device string, c *websocket.Conn) (int, error) {
 	photo := "/root/scripts/photo/201811230854.jpeg"
-	encoded := encode(photo)
-	sendMessageTo(destination, "201811230854.jpeg", 2, encoded, device, c)
-	return len(encoded)
+	encoded, err := encode(photo)
+	if err != nil {
+		sendMessageTo(destination, "201811230854.jpeg", 2, encoded, device, c)
+		return 0, fmt.Errorf("sendphoto failed :%s :%v", photo, err)
+	}
+	return len(encoded), nil
 }
