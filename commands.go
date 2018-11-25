@@ -24,9 +24,11 @@ func doCommand(msg Message, devicename string, c *websocket.Conn) string {
 		if strings.HasPrefix(command, "shell") {
 			shell := strings.Replace(command, "shell ", "", -1)
 			sendMessage("execute command: '"+shell+"'.", 1, devicename, c)
-			out := executeShell(shell)
+			out, err := executeShell(shell)
+			if err != nil {
+				return ""
+			}
 			sendMessage(out, 1, devicename, c)
-
 			return ""
 		}
 		// file

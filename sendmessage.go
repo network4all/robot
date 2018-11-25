@@ -51,7 +51,7 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 	})
 
 	// send photo's
-	cnt := 1
+	cnt := 0
 	for _, fi := range fis {
 		cnt++
 		if cnt > 4 {
@@ -66,8 +66,9 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 		sendMessage("sending: "+name, 1, destination, c)
 		encoded, err := encode(photopath + name)
 		if err != nil {
-			sendMessageTo(destination, name, 2, encoded, device, c)
+			return 0, fmt.Errorf("sendphoto failed :%s :%v", name, err)
 		}
+		sendMessageTo(destination, name, 2, encoded, device, c)
 
 	}
 	return 1, nil

@@ -33,6 +33,7 @@ func decode(filename string, data string) error {
 		return fmt.Errorf("could not decode string %s :%v", filename, err)
 	}
 	f, err := os.Create(filename)
+
 	if err != nil {
 		return fmt.Errorf("could not create file %s :%v", filename, err)
 	}
