@@ -30,4 +30,3 @@ func mykeyboard(commandline string, device string, keypressed string, log *ui.Pa
 	}
 	return commandline
 }
-
