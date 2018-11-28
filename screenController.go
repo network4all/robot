@@ -1,6 +1,10 @@
 package main
 
-import ui "github.com/gizak/termui"
+import (
+	"fmt"
+
+	ui "github.com/gizak/termui"
+)
 
 func initscreen(p *ui.Par, label string) {
 	p.Height = 25

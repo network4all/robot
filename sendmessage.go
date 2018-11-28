@@ -47,7 +47,7 @@ func sendAllPhotos(destination string, device string, c *websocket.Conn) (int, e
 
 	// sort date
 	sort.Slice(fis, func(i, j int) bool {
-		return fis[i].ModTime().Unix() < fis[j].ModTime().Unix()
+		return fis[i].ModTime().Unix() > fis[j].ModTime().Unix()
 	})
 
 	// send photo's

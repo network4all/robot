@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"net/url"
 	"os"
 
@@ -41,7 +42,12 @@ func main() {
 	interrupt := make(chan os.Signal, 1)
 	signal.Notify(interrupt, os.Interrupt)
 	u := url.URL{Scheme: "wss", Host: d.Url(), Path: d.Path()}
-	c, _, err := websocket.DefaultDialer.Dial(u.String(), nil)
+
+	// header authenticatie
+	req, _ := http.NewRequest("GET", "", nil)
+	req.Header.Set("Authenticate", d.AuthKey())
+	c, _, err := websocket.DefaultDialer.Dial(u.String(), req.Header)
+
 	if err != nil {
 		log.Fatal("dial:", err)
 	}
