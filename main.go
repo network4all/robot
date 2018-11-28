@@ -46,7 +46,7 @@ func main() {
 	// header authenticatie
 	req, _ := http.NewRequest("GET", "", nil)
 	req.Header.Set("Authenticate", d.AuthKey())
-	req.Header.Set("devicename", d.Id())
+	req.Header.Set("devicename", devicename)
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), req.Header)
 	if err != nil {
 		log.Fatal("dial:", err)
