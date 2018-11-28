@@ -49,7 +49,6 @@ func main() {
 	req.Header.Set("hostname", d.Id())
 	c, _, err := websocket.DefaultDialer.Dial(u.String(), req.Header)
 	if err != nil {
-		s
 		log.Fatal("dial:", err)
 	}
 	defer c.Close()
